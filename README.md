@@ -27,7 +27,7 @@ Every session. Same prompt. And `/compact` is lossy, so you never know what it d
 2. **Writes a handoff** — goal, fixed decisions, done, next steps in order, files touched, things to watch out for — into Claude Code's auto-memory (default) or a file in your repo.
 3. **Gives you the command.** For compact, a `/compact <focus>` that names what to preserve. For clear, just `/clear`.
 
-The next session starts already knowing where you left off. When that work is finished:
+Open the next session with `continue from the cani-c handoff` and it picks up where you left off. When that work is finished:
 
 ```
 /cani-c done
@@ -42,6 +42,7 @@ removes the handoff so stale context stops following you around.
 
 compact recommended — the payments refactor is mid-diff and the next step needs the error log still in context.
 Handoff written: ~/.claude/projects/-Users-me-app/memory/cani-c-handoff.md
+Next session: continue from the cani-c handoff
 
 /compact preserve the unfinished items of the payments refactor, the decision to keep Stripe webhooks synchronous, and the paths of files being edited
 ```
@@ -95,15 +96,19 @@ cp -r cani-c/skills/cani-c ~/.claude/skills/cani-c
 
 Restart Claude Code. `/cani-c` is now available in every project.
 
+Needs a Claude Code version with auto-memory (`~/.claude/projects/<project>/memory/`). Without it, cani-c falls back to file mode and says so.
+
 ## Memory vs file
 
-**memory** (default) writes to `~/.claude/projects/<project>/memory/`, which Claude Code loads at the start of every session. Nothing lands in your repo. Scoped per project folder.
+**memory** (default) writes to `~/.claude/projects/<project>/memory/`, whose index Claude Code loads at the start of every session. Only the index line is loaded, so the skill tells you the one-line prompt to open the next session with. Nothing lands in your repo. Scoped per project folder.
 
 **file** writes `.claude/cani-c.md` in your repo so teammates and other machines can pick it up. Add a `SessionStart` hook to auto-load it; the skill shows you the snippet.
 
 ## Why not just /compact?
 
-`/compact` keeps a summary the model wrote under token pressure. You cannot see what it cut. cani-c writes a structured handoff *before* you compact or clear, and records the session ID so you can `/resume` or grep the original transcript if something is missing.
+`/compact` keeps a summary the model wrote under token pressure. You cannot see what it cut. cani-c writes a structured handoff *before* you compact or clear, and records the session ID so you can `/resume <id>` or grep the original transcript if something is missing.
+
+The handoff headings stay in English; the body is written in whatever language you were working in.
 
 ## Design choices
 

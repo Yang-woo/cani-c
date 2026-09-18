@@ -58,15 +58,16 @@ One or two sentences. What and why.
 ```
 
 - Convert relative dates to absolute dates.
-- The session ID is the tail of the `Claude-Session` URL in the system reminder.
+- The session ID is the basename of the most recently modified `.jsonl` in `~/.claude/projects/<project>/` (`ls -t`). It is a UUID. Do not use the `session_…` tail of a Claude-Session URL; that is a different ID and `/resume` does not accept it.
+- Keep the template headings and the verdict keyword in English. Write everything else, body and reason, in the language the user has been using.
 - Any "do not do X" the user said goes under Watch out. Lose it and the next session repeats the mistake.
 
 ## Storage
 
 **memory** (default, personal)
 - Write to the auto-memory directory named in the system prompt as `cani-c-handoff.md` with frontmatter `type: project`. Overwrite if it exists.
-- Add `- [cani-c handoff](cani-c-handoff.md) — <one-line task name>` to `MEMORY.md` if missing; otherwise update the hook text.
-- The next session loads this automatically, so the user only needs to type `/clear`.
+- Add `- [cani-c handoff](cani-c-handoff.md) — <one-line task name>; read this first when resuming` to `MEMORY.md` if missing; otherwise update the hook text.
+- Only the `MEMORY.md` index line is loaded at session start, not the body. The next session must be opened with `continue from the cani-c handoff`.
 - Memory is scoped per project folder. A session opened in a subfolder cannot see the parent folder's memory. If the user plans to continue from a different folder, say so.
 - If this environment has no auto-memory directory, fall back to **file** mode and say so.
 
@@ -83,7 +84,8 @@ One or two sentences. What and why.
 Short. Fixed order.
 1. Verdict in one line: `compact recommended` or `clear recommended`, plus one sentence of reason.
 2. Where the handoff was written, one line (path).
-3. The command to type, in a code block. For compact, the full command including the focus. For clear, `/clear`.
+3. First prompt for the next session, one line. memory: `continue from the cani-c handoff`. file without the hook: `read .claude/cani-c.md and continue`. file with the hook: omit this line.
+4. The command to type, in a code block. For compact, the full command including the focus. For clear, `/clear`.
 
 Do not repeat the handoff body in the output. It is in the file.
 

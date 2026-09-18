@@ -27,7 +27,7 @@
 2. **handoff를 쓴다.** 목표, 확정된 결정, 완료한 것, 순서대로 남은 일, 건드린 파일, 주의할 점을 Claude Code의 auto-memory(기본) 또는 리포 안 파일에 기록한다.
 3. **칠 명령을 준다.** compact면 보존할 내용을 지정한 `/compact <focus>`, clear면 그냥 `/clear`.
 
-다음 세션은 어디서 멈췄는지 이미 아는 상태로 시작한다. 그 작업이 끝나면:
+다음 세션을 `continue from the cani-c handoff`로 열면 멈춘 곳에서 바로 이어간다. 그 작업이 끝나면:
 
 ```
 /cani-c done
@@ -42,6 +42,7 @@ handoff를 지워서 오래된 컨텍스트가 계속 따라다니지 않게 한
 
 compact recommended — 결제 리팩터링이 diff 중간이고, 다음 단계가 아직 컨텍스트에 있는 에러 로그를 필요로 함.
 Handoff written: ~/.claude/projects/-Users-me-app/memory/cani-c-handoff.md
+Next session: continue from the cani-c handoff
 
 /compact preserve the unfinished items of the payments refactor, the decision to keep Stripe webhooks synchronous, and the paths of files being edited
 ```
@@ -95,15 +96,19 @@ cp -r cani-c/skills/cani-c ~/.claude/skills/cani-c
 
 Claude Code를 재시작하면 모든 프로젝트에서 `/cani-c`를 쓸 수 있다.
 
+auto-memory(`~/.claude/projects/<project>/memory/`)가 있는 Claude Code 버전이 필요하다. 없으면 file 모드로 폴백하고 그렇게 알려준다.
+
 ## memory vs file
 
-**memory** (기본)는 `~/.claude/projects/<project>/memory/`에 쓴다. Claude Code가 세션 시작마다 자동으로 읽는 곳이다. 리포에는 아무것도 남지 않는다. 프로젝트 폴더 단위로 분리된다.
+**memory** (기본)는 `~/.claude/projects/<project>/memory/`에 쓴다. Claude Code가 세션 시작마다 인덱스를 자동으로 읽는 곳이다. 인덱스 한 줄만 올라오므로, 다음 세션을 열 때 칠 한 줄 프롬프트를 스킬이 알려준다. 리포에는 아무것도 남지 않는다. 프로젝트 폴더 단위로 분리된다.
 
 **file**은 리포 안 `.claude/cani-c.md`에 쓴다. 팀원이나 다른 기기에서 이어받을 수 있다. 자동 로드하려면 `SessionStart` 훅이 필요한데, 스킬이 스니펫을 보여준다.
 
 ## 그냥 /compact 하면 안 되나?
 
-`/compact`는 토큰 압박 속에서 모델이 쓴 요약만 남긴다. 뭘 잘라냈는지 볼 수 없다. cani-c는 compact나 clear *전에* 구조화된 handoff를 쓰고, 세션 ID를 기록해 둔다. 빠진 게 있으면 `/resume`하거나 원본 transcript를 grep하면 된다.
+`/compact`는 토큰 압박 속에서 모델이 쓴 요약만 남긴다. 뭘 잘라냈는지 볼 수 없다. cani-c는 compact나 clear *전에* 구조화된 handoff를 쓰고, 세션 ID를 기록해 둔다. 빠진 게 있으면 `/resume <id>`하거나 원본 transcript를 grep하면 된다.
+
+handoff의 제목은 영어로 고정이고, 본문은 작업하던 언어로 쓰인다.
 
 ## 설계 원칙
 
