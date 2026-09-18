@@ -1,6 +1,10 @@
 ---
 name: cani-c
-description: "Can I clear? Can I compact?" When context gets heavy, decide between /compact and /clear, and write a handoff so the next session picks up exactly where this one left off. Use for "can I compact?", "can I clear?", "clean up context", "wrap up this session", "make it resumable", and Korean equivalents like "compact 해도 돼?", "clear 해도 돼?", "컨텍스트 정리해줘".
+description: >-
+  "Can I clear? Can I compact?" When context gets heavy, decide between /compact and /clear,
+  and write a handoff so the next session picks up exactly where this one left off.
+  Use for "can I compact?", "can I clear?", "clean up context", "wrap up this session",
+  "make it resumable", and Korean equivalents like "compact 해도 돼?", "clear 해도 돼?", "컨텍스트 정리해줘".
 argument-hint: "[clear|compact] [memory|file] [done]"
 ---
 
