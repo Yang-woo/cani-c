@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/banner.png" alt="cani-c: Can I clear? Can I compact?"></p>
+
 # cani-c
 
 [English](README.md) · [한국어](README.ko.md)
