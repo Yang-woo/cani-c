@@ -96,7 +96,7 @@ cp -r cani-c/skills/cani-c ~/.claude/skills/cani-c
 
 Restart Claude Code. `/cani-c` is now available in every project.
 
-Needs a Claude Code version with auto-memory (`~/.claude/projects/<project>/memory/`). Without it, cani-c falls back to file mode and says so.
+Auto memory (`~/.claude/projects/<project>/memory/`) is on by default in Claude Code. If you turned it off with `/memory` or `autoMemoryEnabled: false`, cani-c falls back to file mode and says so.
 
 ## Memory vs file
 

@@ -96,7 +96,7 @@ cp -r cani-c/skills/cani-c ~/.claude/skills/cani-c
 
 Claude Code를 재시작하면 모든 프로젝트에서 `/cani-c`를 쓸 수 있다.
 
-auto-memory(`~/.claude/projects/<project>/memory/`)가 있는 Claude Code 버전이 필요하다. 없으면 file 모드로 폴백하고 그렇게 알려준다.
+auto memory(`~/.claude/projects/<project>/memory/`)는 Claude Code에서 기본으로 켜져 있다. `/memory`나 `autoMemoryEnabled: false`로 껐다면 file 모드로 폴백하고 그렇게 알려준다.
 
 ## memory vs file
 

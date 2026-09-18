@@ -62,7 +62,7 @@ One or two sentences. What and why.
 ```
 
 - Convert relative dates to absolute dates.
-- The session ID is the basename of the most recently modified `.jsonl` in `~/.claude/projects/<project>/` (`ls -t`). It is a UUID. Do not use the `session_…` tail of a Claude-Session URL; that is a different ID and `/resume` does not accept it.
+- The session ID is the basename of the most recently modified `.jsonl` in `~/.claude/projects/<project>/` (`ls -t`). `<project>` is the parent of the auto-memory directory; without one, it is the working directory path with every non-alphanumeric character replaced by `-` (Korean folder names become runs of dashes, so do not guess it, list the directory). It is a UUID. Do not use the `session_…` tail of a Claude-Session URL; that is a different ID and `/resume` does not accept it.
 - Keep the template headings and the verdict keyword in English. Write everything else, body and reason, in the language the user has been using.
 - Any "do not do X" the user said goes under Watch out. Lose it and the next session repeats the mistake.
 
