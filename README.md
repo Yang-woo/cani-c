@@ -5,7 +5,7 @@
 > **"Can I clear? Can I compact?"** — A [Claude Code](https://claude.ai/code) skill that answers that question for you, writes a handoff, and tells you what to type.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)](https://docs.anthropic.com/en/docs/claude-code/skills)
+[![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)](https://code.claude.com/docs/en/skills)
 
 ## The problem
 
@@ -51,7 +51,7 @@ The handoff it wrote:
 
 ```markdown
 # cani-c handoff — app / payments refactor
-written: 2026-09-18  session: 01ABC...  commit: 3fd110a
+written: 2026-09-18  session: 9f2c1b7e-4d3a-4e8b-a1c5-0b6d7e8f9a12  commit: a1b2c3d
 
 ## Goal
 Move charge creation behind a single PaymentService so retries are idempotent.

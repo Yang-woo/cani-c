@@ -5,7 +5,7 @@
 > **"Can I clear? Can I compact?"** — 이 질문에 대신 답하고, 인수인계 문서(handoff)를 쓰고, 칠 명령까지 알려주는 [Claude Code](https://claude.ai/code) 스킬.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)](https://docs.anthropic.com/en/docs/claude-code/skills)
+[![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)](https://code.claude.com/docs/en/skills)
 
 ## 문제
 
@@ -51,7 +51,7 @@ Next session: continue from the cani-c handoff
 
 ```markdown
 # cani-c handoff — app / payments refactor
-written: 2026-09-18  session: 01ABC...  commit: 3fd110a
+written: 2026-09-18  session: 9f2c1b7e-4d3a-4e8b-a1c5-0b6d7e8f9a12  commit: a1b2c3d
 
 ## Goal
 charge 생성을 PaymentService 하나 뒤로 옮겨서 재시도를 멱등하게 만든다.
