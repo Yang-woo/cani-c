@@ -1,8 +1,11 @@
 # cani-c
 
-**"Can I clear? Can I compact?"**
+[English](README.md) · [한국어](README.ko.md)
 
-A Claude Code skill that answers that question for you, writes a handoff, and tells you what to type.
+> **"Can I clear? Can I compact?"** — A [Claude Code](https://claude.ai/code) skill that answers that question for you, writes a handoff, and tells you what to type.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2)](https://docs.anthropic.com/en/docs/claude-code/skills)
 
 ## The problem
 
@@ -32,14 +35,56 @@ The next session starts already knowing where you left off. When that work is fi
 
 removes the handoff so stale context stops following you around.
 
+## Example
+
+```
+> /cani-c
+
+compact recommended — the payments refactor is mid-diff and the next step needs the error log still in context.
+Handoff written: ~/.claude/projects/-Users-me-app/memory/cani-c-handoff.md
+
+/compact preserve the unfinished items of the payments refactor, the decision to keep Stripe webhooks synchronous, and the paths of files being edited
+```
+
+The handoff it wrote:
+
+```markdown
+# cani-c handoff — app / payments refactor
+written: 2026-09-18  session: 01ABC...  commit: 3fd110a
+
+## Goal
+Move charge creation behind a single PaymentService so retries are idempotent.
+
+## Fixed decisions (do not re-litigate)
+- Webhooks stay synchronous. Queue was tried and rejected for ordering bugs.
+
+## Done
+- PaymentService.charge() with idempotency key
+- Tests for the happy path
+
+## Not done / next steps (in order)
+1. Fix the failing test in test_refund.py (KeyError on `charge_id`)
+2. Wire the new service into checkout_view.py
+3. Delete legacy charge_helpers.py
+
+## Files touched
+- src/payments/service.py — new PaymentService
+- tests/test_refund.py — failing, see step 1
+
+## Watch out
+- Do not add a retry decorator; the user rejected it twice.
+```
+
 ## Arguments
 
-| | |
+| Command | What it does |
 |---|---|
 | `/cani-c` | judge, write handoff, tell me what to type |
 | `/cani-c clear` / `/cani-c compact` | skip the judgment |
 | `/cani-c memory` / `/cani-c file` | where the handoff goes (asked once, then remembered) |
 | `/cani-c done` | clean up after the handoff has been worked through |
+
+Works in English and Korean. It also triggers on plain language, no slash needed: "can I compact?", "wrap up this session", "make it resumable", "compact 해도 돼?", "컨텍스트 정리해줘".
 
 ## Install
 
@@ -59,6 +104,20 @@ Restart Claude Code. `/cani-c` is now available in every project.
 ## Why not just /compact?
 
 `/compact` keeps a summary the model wrote under token pressure. You cannot see what it cut. cani-c writes a structured handoff *before* you compact or clear, and records the session ID so you can `/resume` or grep the original transcript if something is missing.
+
+## Design choices
+
+- **One skill, no sub-commands.** Every variant is an argument.
+- **No transcript parser.** The full jsonl is already on disk; the handoff only holds what resuming needs.
+- **Never edits your settings.** File mode shows you the hook snippet and lets you paste it.
+
+## Contributing
+
+PRs welcome. Ideas:
+
+- A `PreCompact` hook that writes the handoff automatically before auto-compact fires
+- Trigger phrases in more languages
+- Real-world handoffs that lost something — open an issue with what was missing
 
 ## License
 
