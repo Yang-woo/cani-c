@@ -1,0 +1,9 @@
+{
+  "name": "cani-c",
+  "version": "1.0.0",
+  "description": "\"Can I clear? Can I compact?\" Decide between /compact and /clear, write a session handoff, and tell you what to type.",
+  "author": {
+    "name": "Yang-woo",
+    "url": "https://github.com/Yang-woo"
+  }
+}

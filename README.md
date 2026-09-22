@@ -91,12 +91,21 @@ Works in English and Korean. It also triggers on plain language, no slash needed
 
 ## Install
 
+As a plugin, inside Claude Code:
+
+```
+/plugin marketplace add Yang-woo/cani-c
+/plugin install cani-c@cani-c
+```
+
+Or copy the skill by hand and restart Claude Code:
+
 ```bash
 git clone https://github.com/Yang-woo/cani-c.git
 cp -r cani-c/skills/cani-c ~/.claude/skills/cani-c
 ```
 
-Restart Claude Code. `/cani-c` is now available in every project.
+Either way, `/cani-c` is now available in every project.
 
 Auto memory (`~/.claude/projects/<project>/memory/`) is on by default in Claude Code. If you turned it off with `/memory` or `autoMemoryEnabled: false`, cani-c falls back to file mode and says so.
 

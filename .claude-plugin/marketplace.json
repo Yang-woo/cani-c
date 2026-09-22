@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cani-c",
+  "description": "\"Can I clear? Can I compact?\" Decide, write a handoff, and know what to type.",
+  "owner": {
+    "name": "Yang-woo",
+    "url": "https://github.com/Yang-woo"
+  },
+  "plugins": [
+    {
+      "name": "cani-c",
+      "description": "Decide between /compact and /clear, write a session handoff, and tell you what to type.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

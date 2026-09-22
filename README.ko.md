@@ -91,12 +91,21 @@ charge 생성을 PaymentService 하나 뒤로 옮겨서 재시도를 멱등하�
 
 ## 설치
 
+Claude Code 안에서 플러그인으로:
+
+```
+/plugin marketplace add Yang-woo/cani-c
+/plugin install cani-c@cani-c
+```
+
+또는 스킬을 직접 복사하고 Claude Code를 재시작:
+
 ```bash
 git clone https://github.com/Yang-woo/cani-c.git
 cp -r cani-c/skills/cani-c ~/.claude/skills/cani-c
 ```
 
-Claude Code를 재시작하면 모든 프로젝트에서 `/cani-c`를 쓸 수 있다.
+어느 쪽이든 모든 프로젝트에서 `/cani-c`를 쓸 수 있다.
 
 auto memory(`~/.claude/projects/<project>/memory/`)는 Claude Code에서 기본으로 켜져 있다. `/memory`나 `autoMemoryEnabled: false`로 껐다면 file 모드로 폴백하고 그렇게 알려준다.
 
