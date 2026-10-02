@@ -1,7 +1,7 @@
 {
   "name": "cani-c",
-  "version": "1.1.0",
-  "description": "\"Can I clear? Can I compact?\" Decide between /compact and /clear, write a session handoff, and tell you what to type.",
+  "version": "1.1.1",
+  "description": "\"Can I clear? Can I compact?\" Decide whether it is safe to /compact or /clear right now, write a session handoff, and tell you what to type.",
   "author": {
     "name": "Yang-woo",
     "url": "https://github.com/Yang-woo"

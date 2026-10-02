@@ -98,7 +98,7 @@ not yet — 테스트가 아직 돌고 있고, 이름 변경이 절반만 적용
 
 | 명령 | 동작 |
 |---|---|
-| `/cani-c` | 판정하고, handoff 쓰고, 칠 명령 알려줌 |
+| `/cani-c` | 판정(not yet / compact / clear)하고, handoff 쓰고, 칠 명령 알려줌 |
 | `/cani-c clear` / `/cani-c compact` | compact/clear 선택 생략 (막는 요소는 경고로) |
 | `/cani-c memory` / `/cani-c file` | handoff 저장 위치 (한 번만 묻고 기억함) |
 | `/cani-c done` | handoff대로 작업을 마친 뒤 정리 |
@@ -121,7 +121,7 @@ git clone https://github.com/Yang-woo/cani-c.git
 cp -r cani-c/skills/cani-c ~/.claude/skills/cani-c
 ```
 
-어느 쪽이든 모든 프로젝트에서 `/cani-c`를 쓸 수 있다.
+어느 쪽이든 모든 프로젝트에서 쓸 수 있다. 직접 복사했다면 명령은 `/cani-c`다. 플러그인으로 설치했다면 정식 이름은 `/cani-c:cani-c`이고, `/cani-c`까지 치면 자동완성에 뜬다.
 
 auto memory(`~/.claude/projects/<project>/memory/`)는 Claude Code에서 기본으로 켜져 있다. `/memory`나 `autoMemoryEnabled: false`로 껐다면 file 모드로 폴백하고 그렇게 알려준다.
 

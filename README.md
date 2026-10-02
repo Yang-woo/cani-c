@@ -98,7 +98,7 @@ Run /cani-c again after the tests report and the rename is done.
 
 | Command | What it does |
 |---|---|
-| `/cani-c` | judge, write handoff, tell me what to type |
+| `/cani-c` | judge (not yet / compact / clear), write handoff, tell me what to type |
 | `/cani-c clear` / `/cani-c compact` | skip the compact-vs-clear choice (blockers become warnings) |
 | `/cani-c memory` / `/cani-c file` | where the handoff goes (asked once, then remembered) |
 | `/cani-c done` | clean up after the handoff has been worked through |
@@ -121,7 +121,7 @@ git clone https://github.com/Yang-woo/cani-c.git
 cp -r cani-c/skills/cani-c ~/.claude/skills/cani-c
 ```
 
-Either way, `/cani-c` is now available in every project.
+Either way, it is now available in every project. Copied by hand, the command is `/cani-c`. Installed as a plugin, its full name is `/cani-c:cani-c`, and typing `/cani-c` finds it in autocomplete.
 
 Auto memory (`~/.claude/projects/<project>/memory/`) is on by default in Claude Code. If you turned it off with `/memory` or `autoMemoryEnabled: false`, cani-c falls back to file mode and says so.
 

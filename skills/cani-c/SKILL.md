@@ -1,10 +1,11 @@
 ---
 name: cani-c
 description: >-
-  "Can I clear? Can I compact?" When context gets heavy, decide between /compact and /clear,
-  and write a handoff so the next session picks up exactly where this one left off.
-  Use for "can I compact?", "can I clear?", "clean up context", "wrap up this session",
-  "make it resumable", and Korean equivalents like "compact 해도 돼?", "clear 해도 돼?", "컨텍스트 정리해줘".
+  "Can I clear? Can I compact?" When context gets heavy, decide whether it is safe to clear or
+  compact right now and, if so, which one, then write a handoff so the next session picks up
+  exactly where this one left off. Use for "can I compact?", "can I clear?", "is it safe to clear now?",
+  "clean up context", "wrap up this session", "make it resumable", and Korean equivalents like
+  "compact 해도 돼?", "clear 해도 돼?", "지금 정리해도 돼?", "컨텍스트 정리해줘".
 argument-hint: "[clear|compact] [memory|file] [done]"
 ---
 
@@ -34,10 +35,10 @@ Run `git status` first if this is a git repo. Then:
 - A background task, subagent, or workflow started this session is still running. Its result would land in a session that no longer knows why it was started.
 - A git rebase, merge, cherry-pick, or revert is in progress, or a multi-step change is half-applied (renamed in one place but not the other, a migration half-run).
 - A question to the user is still open, or the user's latest correction has not been applied yet.
-- The next step is small and fully in context (one edit, one test re-run). Finishing it costs less than writing it down.
+- The current task is one small step from done (one edit, one test re-run) and that step is fully in context. Finishing it costs less than writing it down. Starting the next task does not count.
 
 Otherwise pick one:
-- **compact**: the remaining work depends heavily on details currently in context (open file contents, an in-progress diff, an error log just seen). Work was interrupted mid-task.
+- **compact**: the remaining work depends heavily on details currently in context (open file contents, an in-progress diff, an error log just seen). Work stopped mid-task at a consistent point; nothing is half-applied.
 - **clear**: a unit of work is finished and the next task can start fresh. Or the context already holds a lot of stale information that would pollute a compact summary.
 - When in doubt, clear. With a handoff in place, clear is cleaner. Compact is lossy compression and you cannot tell what was dropped.
 
@@ -48,7 +49,7 @@ When recommending compact, produce a `/compact <focus>` command. The focus names
 For compact or clear, check for loose ends a handoff alone will not fix. Report only what applies; skip the section when nothing does.
 - Uncommitted changes: list them and say whether they look ready to commit. Do not commit unless the user asks.
 - Processes started this session that outlive a clear (dev servers, watchers): name them so they get stopped or remembered.
-- Lessons that should outlive this task (a user preference, a correction, a project rule): save each as its own memory now. `done` deletes the handoff; these must survive it.
+- Lessons that should outlive this task (a user preference, a correction, a project rule): save each as its own auto-memory now, updating an existing memory rather than adding a duplicate. `done` deletes the handoff; these must survive it. Without auto-memory, list them and suggest adding them to CLAUDE.md.
 
 ## Handoff template
 
@@ -78,7 +79,7 @@ One or two sentences. What and why.
 ```
 
 - Convert relative dates to absolute dates.
-- The session ID is the basename of the most recently modified `.jsonl` in `~/.claude/projects/<project>/` (`ls -t`). `<project>` is the parent of the auto-memory directory; without one, it is the working directory path with every non-alphanumeric character replaced by `-` (Korean folder names become runs of dashes, so do not guess it, list the directory). It is a UUID. Do not use the `session_…` tail of a Claude-Session URL; that is a different ID and `/resume` does not accept it.
+- Session ID: `${CLAUDE_SESSION_ID}`. If that still reads as a literal `${...}` placeholder, fall back to the basename of the most recently modified `.jsonl` in `~/.claude/projects/<project>/` (`ls -t`). `<project>` is the parent of the auto-memory directory; without one, it is the working directory path with every non-alphanumeric character replaced by `-` (Korean folder names become runs of dashes, so do not guess it, list the directory). Either way it is a UUID. Do not use the `session_…` tail of a Claude-Session URL; that is a different ID and `/resume` does not accept it.
 - Keep the template headings and the verdict keyword in English. Write everything else, body and reason, in the language the user has been using.
 - Any "do not do X" the user said goes under Watch out. Lose it and the next session repeats the mistake.
 
@@ -117,8 +118,10 @@ Short. Fixed order.
 
 Do not repeat the handoff body in the output. It is in the file.
 
+Refer to this skill by the name the user invoked it with: `/cani-c`, or `/cani-c:cani-c` when installed as a plugin.
+
 ## done
 
 - memory: delete `cani-c-handoff.md` and its line in `MEMORY.md`.
 - file: delete `.claude/cani-c.md`. Leave the hook; it is silent when the file is absent.
-- Print one confirmation line.
+- Print one confirmation line. If there was no handoff, say there was nothing to clean up.

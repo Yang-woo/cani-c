@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "cani-c",
-      "description": "Decide between /compact and /clear, write a session handoff, and tell you what to type.",
+      "description": "Decide whether it is safe to /compact or /clear right now, write a session handoff, and tell you what to type.",
       "source": "./",
       "category": "productivity"
     }
