@@ -27,12 +27,14 @@ Every session. Same prompt. And `/compact` is lossy, so you never know what it d
 
 1. **Decides** whether now is a safe moment at all. If a subagent is still running, a rebase is half-done, or the next step is one edit away, it says `not yet`, explains why, and tells you what to finish first. Otherwise it picks compact or clear based on whether the remaining work depends on details currently in context.
 2. **Flags loose ends** a handoff will not fix: uncommitted changes, dev servers still running, lessons worth saving as permanent memory.
-3. **Writes a handoff** — goal, fixed decisions, done, next steps in order, files touched, things to watch out for — into Claude Code's auto-memory (default) or a file in your repo.
+3. **Writes or updates a handoff** — goal, fixed decisions, done, next steps in order, files touched, things to watch out for — into Claude Code's auto-memory (default) or a file in your repo.
 4. **Gives you the command.** For compact, a `/compact <focus>` that names what to preserve. For clear, just `/clear`.
 
 In the next session, just start working. The memory index notes that unfinished work exists, and Claude opens the handoff when your request relates to it. To be sure, say `continue from the cani-c handoff`.
 
-Run `/cani-c` again later and the handoff rolls forward: finished steps move to Done, decisions and watch-outs carry over. Once every step is done, `/cani-c` removes the handoff instead of writing a new one, so stale context stops following you around. `/cani-c done` does the same by hand.
+Run `/cani-c` again later and the handoff rolls forward: finished steps move to Done, decisions and watch-outs carry over, and earlier session IDs stay listed. Once every step is done, `/cani-c` removes the handoff instead of writing a new one, so stale context stops following you around. `/cani-c done` does the same by hand. Either way, lasting lessons in its watch-outs are saved to memory before it goes.
+
+If the existing handoff belongs to a different task that still has open steps, `/cani-c` asks once whether to replace it, or leaves it alone when this session has nothing to hand off.
 
 ## Example
 
@@ -129,7 +131,7 @@ Auto memory (`~/.claude/projects/<project>/memory/`) is on by default in Claude 
 
 ## Why not just /compact?
 
-`/compact` keeps a summary the model wrote under token pressure. You cannot see what it cut. cani-c writes a structured handoff *before* you compact or clear, and records the session ID so you can `/resume <id>` or grep the original transcript if something is missing.
+`/compact` keeps a summary the model wrote under token pressure. You cannot see what it cut. cani-c writes a structured handoff *before* you compact or clear, and records session IDs so you can `/resume <id>` or grep the original transcript if something is missing.
 
 The handoff headings stay in English; the body is written in whatever language you were working in.
 
