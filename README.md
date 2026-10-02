@@ -30,13 +30,9 @@ Every session. Same prompt. And `/compact` is lossy, so you never know what it d
 3. **Writes a handoff** — goal, fixed decisions, done, next steps in order, files touched, things to watch out for — into Claude Code's auto-memory (default) or a file in your repo.
 4. **Gives you the command.** For compact, a `/compact <focus>` that names what to preserve. For clear, just `/clear`.
 
-Open the next session with `continue from the cani-c handoff` and it picks up where you left off. When that work is finished:
+In the next session, just start working. The memory index notes that unfinished work exists, and Claude opens the handoff when your request relates to it. To be sure, say `continue from the cani-c handoff`.
 
-```
-/cani-c done
-```
-
-removes the handoff so stale context stops following you around.
+Run `/cani-c` again later and the handoff rolls forward: finished steps move to Done, decisions and watch-outs carry over. Once every step is done, `/cani-c` removes the handoff instead of writing a new one, so stale context stops following you around. `/cani-c done` does the same by hand.
 
 ## Example
 
@@ -48,7 +44,7 @@ Before you run it:
 - 2 uncommitted files, not ready to commit (test_refund.py still failing)
 - Saved to memory: the user does not want retry decorators
 Handoff written: ~/.claude/projects/-Users-me-app/memory/cani-c-handoff.md
-Next session: continue from the cani-c handoff
+Next session: just start; to be sure, say "continue from the cani-c handoff"
 
 /compact preserve the unfinished items of the payments refactor, the decision to keep Stripe webhooks synchronous, and the paths of files being edited
 ```
@@ -101,7 +97,7 @@ Run /cani-c again after the tests report and the rename is done.
 | `/cani-c` | judge (not yet / compact / clear), write handoff, tell me what to type |
 | `/cani-c clear` / `/cani-c compact` | skip the compact-vs-clear choice (blockers become warnings) |
 | `/cani-c memory` / `/cani-c file` | where the handoff goes (asked once, then remembered) |
-| `/cani-c done` | clean up after the handoff has been worked through |
+| `/cani-c done` | remove the handoff by hand (`/cani-c` already does this once every step is done) |
 
 Works in English and Korean. It also triggers on plain language, no slash needed: "can I compact?", "wrap up this session", "make it resumable", "compact 해도 돼?", "컨텍스트 정리해줘".
 
@@ -127,7 +123,7 @@ Auto memory (`~/.claude/projects/<project>/memory/`) is on by default in Claude 
 
 ## Memory vs file
 
-**memory** (default) writes to `~/.claude/projects/<project>/memory/`, whose index Claude Code loads at the start of every session. Only the index line is loaded, so the skill tells you the one-line prompt to open the next session with. Nothing lands in your repo. Scoped per project folder.
+**memory** (default) writes to `~/.claude/projects/<project>/memory/`, whose index Claude Code loads at the start of every session. Only the index line is loaded; it says that unfinished work exists, which is usually enough for the next session to open the handoff. Nothing lands in your repo. Scoped per project folder. If two sessions in the same folder run `/cani-c` at the same time, the later one wins.
 
 **file** writes `.claude/cani-c.md` in your repo so teammates and other machines can pick it up. Add a `SessionStart` hook to auto-load it; the skill shows you the snippet.
 
