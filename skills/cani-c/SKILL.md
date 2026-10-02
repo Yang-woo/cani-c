@@ -25,7 +25,7 @@ The full transcript already lives in `~/.claude/projects/<project>/<sessionId>.j
 | (none) | Judgment mode. I decide: not yet, compact, or clear. |
 | `clear` / `compact` | Skip the compact-vs-clear choice. Blockers are still checked, but reported under "Before you run it" instead of stopping. |
 | `memory` / `file` | Where to store the handoff. If omitted, use the saved preference. If none is saved, ask once and store the answer as a `user` memory named `cani-c-target` so it is never asked again. |
-| `done` | Remove the handoff by hand. Usually unnecessary: judgment mode removes it once its work is finished. |
+| `done` | Remove the handoff by hand. Usually unnecessary: any other run removes it once its work is finished (see "Existing handoff"). |
 
 ## Judgment
 
@@ -50,7 +50,7 @@ When recommending compact, produce a `/compact <focus>` command. The focus names
 For compact or clear, check for loose ends a handoff alone will not fix. Report only what applies; skip the section when nothing does.
 - Uncommitted changes: list them and say whether they look ready to commit. Do not commit unless the user asks.
 - Processes started this session that outlive a clear (dev servers, watchers): name them so they get stopped or remembered.
-- Lessons that should outlive this task (a user preference, a correction, a project rule): save each as its own auto-memory now, updating an existing memory rather than adding a duplicate. `done` deletes the handoff; these must survive it. Without auto-memory, list them and suggest adding them to CLAUDE.md.
+- Lessons that should outlive this task (a user preference, a correction, a project rule): save each as its own auto-memory now, updating an existing memory rather than adding a duplicate. The handoff gets deleted once its work is done; these must survive it. Without auto-memory, list them and suggest adding them to CLAUDE.md.
 
 ## Existing handoff
 

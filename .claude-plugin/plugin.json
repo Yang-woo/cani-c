@@ -1,6 +1,6 @@
 {
   "name": "cani-c",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "\"Can I clear? Can I compact?\" Decide whether it is safe to /compact or /clear right now, write a session handoff, and tell you what to type.",
   "author": {
     "name": "Yang-woo",
