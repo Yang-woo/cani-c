@@ -25,9 +25,10 @@ Every session. Same prompt. And `/compact` is lossy, so you never know what it d
 /cani-c
 ```
 
-1. **Decides** compact vs clear based on whether the remaining work depends on details currently in context.
-2. **Writes a handoff** — goal, fixed decisions, done, next steps in order, files touched, things to watch out for — into Claude Code's auto-memory (default) or a file in your repo.
-3. **Gives you the command.** For compact, a `/compact <focus>` that names what to preserve. For clear, just `/clear`.
+1. **Decides** whether now is a safe moment at all. If a subagent is still running, a rebase is half-done, or the next step is one edit away, it says `not yet`, explains why, and tells you what to finish first. Otherwise it picks compact or clear based on whether the remaining work depends on details currently in context.
+2. **Flags loose ends** a handoff will not fix: uncommitted changes, dev servers still running, lessons worth saving as permanent memory.
+3. **Writes a handoff** — goal, fixed decisions, done, next steps in order, files touched, things to watch out for — into Claude Code's auto-memory (default) or a file in your repo.
+4. **Gives you the command.** For compact, a `/compact <focus>` that names what to preserve. For clear, just `/clear`.
 
 Open the next session with `continue from the cani-c handoff` and it picks up where you left off. When that work is finished:
 
@@ -43,6 +44,9 @@ removes the handoff so stale context stops following you around.
 > /cani-c
 
 compact recommended — the payments refactor is mid-diff and the next step needs the error log still in context.
+Before you run it:
+- 2 uncommitted files, not ready to commit (test_refund.py still failing)
+- Saved to memory: the user does not want retry decorators
 Handoff written: ~/.claude/projects/-Users-me-app/memory/cani-c-handoff.md
 Next session: continue from the cani-c handoff
 
@@ -78,12 +82,24 @@ Move charge creation behind a single PaymentService so retries are idempotent.
 - Do not add a retry decorator; the user rejected it twice.
 ```
 
+When it is not a good moment:
+
+```
+> /cani-c
+
+not yet — a test run is still in flight and a rename is half-applied.
+- The integration-test subagent has not reported back. Its result would land in a session that no longer knows why it ran. Wait for it.
+- users.email is renamed in the migration but not in models.py. Finish the rename first.
+
+Run /cani-c again after the tests report and the rename is done.
+```
+
 ## Arguments
 
 | Command | What it does |
 |---|---|
 | `/cani-c` | judge, write handoff, tell me what to type |
-| `/cani-c clear` / `/cani-c compact` | skip the judgment |
+| `/cani-c clear` / `/cani-c compact` | skip the compact-vs-clear choice (blockers become warnings) |
 | `/cani-c memory` / `/cani-c file` | where the handoff goes (asked once, then remembered) |
 | `/cani-c done` | clean up after the handoff has been worked through |
 

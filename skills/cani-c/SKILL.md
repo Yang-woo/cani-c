@@ -11,9 +11,9 @@ argument-hint: "[clear|compact] [memory|file] [done]"
 # cani-c
 
 The user is about to run `/compact` or `/clear`. Three jobs:
-1. Decide which one is right. One line.
-2. Write a handoff so the next session can continue without loss.
-3. Give the exact command to type, as the last line.
+1. Decide whether now is a safe moment at all, and if so, which one. One line.
+2. If it is safe: flag loose ends, then write a handoff so the next session can continue without loss.
+3. Give the exact next step as the last line.
 
 The full transcript already lives in `~/.claude/projects/<project>/<sessionId>.jsonl`. The handoff is not a summary; it is only what resuming needs. Details can be recovered later with `/resume <sessionId>` or by grepping the jsonl.
 
@@ -21,18 +21,34 @@ The full transcript already lives in `~/.claude/projects/<project>/<sessionId>.j
 
 | Argument | Meaning |
 |---|---|
-| (none) | Judgment mode. I pick compact or clear. |
-| `clear` / `compact` | Skip judgment, proceed with the given one. |
+| (none) | Judgment mode. I decide: not yet, compact, or clear. |
+| `clear` / `compact` | Skip the compact-vs-clear choice. Blockers are still checked, but reported under "Before you run it" instead of stopping. |
 | `memory` / `file` | Where to store the handoff. If omitted, use the saved preference. If none is saved, ask once and store the answer as a `user` memory named `cani-c-target` so it is never asked again. |
 | `done` | The previous handoff has been worked through. Delete the memory file and its MEMORY.md index line, or delete the file. |
 
-## Judgment (no argument)
+## Judgment
 
+Run `git status` first if this is a git repo. Then:
+
+**not yet** if any blocker applies. Do not write a handoff; it would be stale in minutes.
+- A background task, subagent, or workflow started this session is still running. Its result would land in a session that no longer knows why it was started.
+- A git rebase, merge, cherry-pick, or revert is in progress, or a multi-step change is half-applied (renamed in one place but not the other, a migration half-run).
+- A question to the user is still open, or the user's latest correction has not been applied yet.
+- The next step is small and fully in context (one edit, one test re-run). Finishing it costs less than writing it down.
+
+Otherwise pick one:
 - **compact**: the remaining work depends heavily on details currently in context (open file contents, an in-progress diff, an error log just seen). Work was interrupted mid-task.
 - **clear**: a unit of work is finished and the next task can start fresh. Or the context already holds a lot of stale information that would pollute a compact summary.
 - When in doubt, clear. With a handoff in place, clear is cleaner. Compact is lossy compression and you cannot tell what was dropped.
 
 When recommending compact, produce a `/compact <focus>` command. The focus names what to preserve. Example: `/compact preserve the unfinished items of account-refactor A-1, the fixed design decisions, and the paths of files being edited`.
+
+## Before you run it
+
+For compact or clear, check for loose ends a handoff alone will not fix. Report only what applies; skip the section when nothing does.
+- Uncommitted changes: list them and say whether they look ready to commit. Do not commit unless the user asks.
+- Processes started this session that outlive a clear (dev servers, watchers): name them so they get stopped or remembered.
+- Lessons that should outlive this task (a user preference, a correction, a project rule): save each as its own memory now. `done` deletes the handoff; these must survive it.
 
 ## Handoff template
 
@@ -86,10 +102,18 @@ One or two sentences. What and why.
 ## Output
 
 Short. Fixed order.
-1. Verdict in one line: `compact recommended` or `clear recommended`, plus one sentence of reason.
-2. Where the handoff was written, one line (path).
-3. First prompt for the next session, one line. memory: `continue from the cani-c handoff`. file without the hook: `read .claude/cani-c.md and continue`. file with the hook: omit this line.
-4. The command to type, in a code block. For compact, the full command including the focus. For clear, `/clear`.
+
+**not yet**
+1. `not yet`, plus one sentence of reason.
+2. One bullet per blocker: what it is, why it blocks, what clears it.
+3. Last line: when to run `/cani-c` again.
+
+**compact / clear**
+1. `compact recommended` or `clear recommended`, plus one sentence of reason.
+2. `Before you run it:` bullets, only if any apply.
+3. Where the handoff was written, one line (path).
+4. First prompt for the next session, one line. memory: `continue from the cani-c handoff`. file without the hook: `read .claude/cani-c.md and continue`. file with the hook: omit this line.
+5. The command to type, in a code block. For compact, the full command including the focus. For clear, `/clear`.
 
 Do not repeat the handoff body in the output. It is in the file.
 

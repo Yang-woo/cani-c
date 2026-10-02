@@ -25,9 +25,10 @@
 /cani-c
 ```
 
-1. **판정한다.** 남은 작업이 지금 컨텍스트에 있는 세부 내용에 얼마나 기대는지 보고 compact와 clear 중 하나를 고른다.
-2. **handoff를 쓴다.** 목표, 확정된 결정, 완료한 것, 순서대로 남은 일, 건드린 파일, 주의할 점을 Claude Code의 auto-memory(기본) 또는 리포 안 파일에 기록한다.
-3. **칠 명령을 준다.** compact면 보존할 내용을 지정한 `/compact <focus>`, clear면 그냥 `/clear`.
+1. **판정한다.** 먼저 지금 해도 되는 시점인지 본다. 서브에이전트가 아직 돌고 있거나, rebase가 중간이거나, 다음 단계가 수정 한 번이면 `not yet`이라고 하고 이유와 먼저 끝낼 일을 알려준다. 해도 되면 남은 작업이 지금 컨텍스트의 세부 내용에 얼마나 기대는지 보고 compact와 clear 중 하나를 고른다.
+2. **정리할 것을 짚는다.** handoff만으로 해결 안 되는 것들: 커밋 안 된 변경, 아직 떠 있는 dev 서버, 영구 메모리로 남길 교훈.
+3. **handoff를 쓴다.** 목표, 확정된 결정, 완료한 것, 순서대로 남은 일, 건드린 파일, 주의할 점을 Claude Code의 auto-memory(기본) 또는 리포 안 파일에 기록한다.
+4. **칠 명령을 준다.** compact면 보존할 내용을 지정한 `/compact <focus>`, clear면 그냥 `/clear`.
 
 다음 세션을 `continue from the cani-c handoff`로 열면 멈춘 곳에서 바로 이어간다. 그 작업이 끝나면:
 
@@ -43,6 +44,9 @@ handoff를 지워서 오래된 컨텍스트가 계속 따라다니지 않게 한
 > /cani-c
 
 compact recommended — 결제 리팩터링이 diff 중간이고, 다음 단계가 아직 컨텍스트에 있는 에러 로그를 필요로 함.
+Before you run it:
+- 커밋 안 된 파일 2개, 아직 커밋할 상태 아님 (test_refund.py 실패 중)
+- 메모리에 저장함: 사용자는 retry 데코레이터를 원하지 않음
 Handoff written: ~/.claude/projects/-Users-me-app/memory/cani-c-handoff.md
 Next session: continue from the cani-c handoff
 
@@ -78,12 +82,24 @@ charge 생성을 PaymentService 하나 뒤로 옮겨서 재시도를 멱등하�
 - retry 데코레이터 추가 금지. 사용자가 두 번 거절함.
 ```
 
+지금 하면 안 될 때:
+
+```
+> /cani-c
+
+not yet — 테스트가 아직 돌고 있고, 이름 변경이 절반만 적용됨.
+- 통합 테스트 서브에이전트가 아직 결과를 안 줬다. 지금 정리하면 왜 돌렸는지 모르는 세션에 결과가 떨어진다. 끝날 때까지 기다릴 것.
+- users.email 이름이 마이그레이션에서만 바뀌고 models.py에는 그대로다. 먼저 마저 바꿀 것.
+
+테스트 결과가 오고 이름 변경이 끝나면 /cani-c를 다시 실행.
+```
+
 ## 인자
 
 | 명령 | 동작 |
 |---|---|
 | `/cani-c` | 판정하고, handoff 쓰고, 칠 명령 알려줌 |
-| `/cani-c clear` / `/cani-c compact` | 판정 생략 |
+| `/cani-c clear` / `/cani-c compact` | compact/clear 선택 생략 (막는 요소는 경고로) |
 | `/cani-c memory` / `/cani-c file` | handoff 저장 위치 (한 번만 묻고 기억함) |
 | `/cani-c done` | handoff대로 작업을 마친 뒤 정리 |
 
