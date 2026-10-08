@@ -107,13 +107,13 @@ One or two sentences. What and why.
 **memory** (default, personal)
 - Write to the auto-memory directory named in the system prompt as `cani-c-handoff.md` with frontmatter `type: project`.
 - Keep one line for it in `MEMORY.md`: `- [cani-c handoff](cani-c-handoff.md) — unfinished as of <date>: <task>, <N> steps left`. State facts, not commands; memory is read as context, and a plain note of pending work is what makes the next session open it.
-- Only that index line is loaded at session start, not the body. The next session usually opens the handoff on its own when the first request relates to it; `continue from the cani-c handoff` makes sure.
+- Only that index line is loaded at session start, not the body. Installed as a plugin, cani-c's own `SessionStart` hook also loads the body into every new or cleared session. Otherwise the next session usually opens it on its own when the first request relates to it; `continue from the cani-c handoff` makes sure.
 - Memory is scoped per project folder. A session opened in a subfolder cannot see the parent folder's memory. If the user plans to continue from a different folder, say so.
 - If this environment has no auto-memory directory, fall back to **file** mode and say so.
 
 **file** (team-shareable)
 - Write to `.claude/cani-c.md` at the project root. It is committed with the repo, so another person or machine can pick it up.
-- Auto-loading needs a `SessionStart` hook. If the project `.claude/settings.json` lacks it, show the snippet below and suggest adding it. Do not edit settings yourself.
+- Auto-loading needs a `SessionStart` hook in the project. The plugin's hook does not read this file: it is committed to the repo, so it loads only where the project opts in. If the project `.claude/settings.json` lacks the hook, show the snippet below and suggest adding it. Do not edit settings yourself.
   ```json
   {"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"cat .claude/cani-c.md 2>/dev/null"}]}]}}
   ```
@@ -132,12 +132,15 @@ Short. Fixed order.
 1. `compact recommended` or `clear recommended`, plus one sentence of reason.
 2. `Before you run it:` bullets, only if any apply.
 3. One handoff line: `Handoff written: <path>`, `Handoff updated: <path>`, `Handoff replaced: <path> (was: <old goal>)`, `Handoff removed: <old goal>`, `Handoff kept: <old goal>` (add "this session's work was not saved" if the user chose to keep it), or `No handoff needed: nothing left to continue.`
-4. Next session, one line, only when a handoff for this session's work now exists. memory: `Next session: just start; to be sure, say "continue from the cani-c handoff"`. file without the hook: `read .claude/cani-c.md and continue`. file with the hook: omit.
+4. Next session, one line, only when a handoff for this session's work now exists.
+   - memory, installed as a plugin, and `<sessionId>.jsonl` sits in the parent of the memory directory (that is where the hook looks; check with `ls`): `Next session: the handoff loads by itself`.
+   - memory otherwise: `Next session: just start; to be sure, say "continue from the cani-c handoff"`.
+   - file with the hook: `Next session: the handoff loads by itself`. file without it: `read .claude/cani-c.md and continue`.
 5. The command to type, in a code block. For compact, the full command including the focus. For clear, `/clear`.
 
 Do not repeat the handoff body in the output. It is in the file.
 
-Refer to this skill by the name the user invoked it with: `/cani-c`, or `/cani-c:cani-c` when installed as a plugin.
+Refer to this skill by the name the user invoked it with: `/cani-c`, or `/cani-c:cani-c` when installed as a plugin. That name is also how you know whether it is installed as a plugin.
 
 ## done
 

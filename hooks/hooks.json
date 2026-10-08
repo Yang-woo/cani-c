@@ -1,0 +1,16 @@
+{
+  "description": "Load the memory-mode cani-c handoff into new and cleared sessions",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/restore.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
