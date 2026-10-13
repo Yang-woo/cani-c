@@ -54,24 +54,21 @@ For compact or clear, check for loose ends a handoff alone will not fix. Report 
 
 ## Existing handoff
 
-Before writing anything, read the handoff already at the target location, if any. "Work to continue" means this session leaves unfinished steps or next steps. A step counts as done only if this session finished it and you can see that it did. Steps that are the user's to do, or that wait for a date, stay open.
+Before writing anything, read the handoffs already at the target location: in memory every `cani-c-handoff*.md`, in file mode `.claude/cani-c.md`. For another task's handoff, its Goal and Not done are enough to decide; read the rest only before removing it. "Work to continue" means this session leaves unfinished steps or next steps. A step counts as done only if this session finished it and you can see that it did. Steps that are the user's to do, or that wait for a date, stay open.
 
-| Existing handoff | Work to continue | Nothing to continue |
-|---|---|---|
-| None | Write a new one | Write nothing |
-| Same task as this session | Update it | Update it; remove it if no step is left open |
-| Other task, every step done | Replace it | Remove it |
-| Other task, steps still open | Ask once: replace it or keep it | Keep it |
+- This session's handoff (this session continued its work, whether or not its listed steps are all done): update it. If no step is left open, remove it.
+- None is this session's and there is work to continue: write a new one.
+- Another task's handoff: remove it if no step in it is left open; otherwise keep it.
+- File mode has one slot. If another task's handoff with open steps holds it and this session has work to continue, ask once: replace it or keep it. If kept, do not write one for this session, and say so. If replaced, say that its open steps are gone.
 
-"Same task" means this session continued the handoff's work, whether or not its listed steps are all done. "Remove" deletes it the way `done` does.
+"Remove" deletes it the way `done` does.
 
 - Update: carry over fixed decisions and watch-outs that still hold, move finished steps to Done, add the new steps. Keep in Done only what a remaining step relies on.
 - Before replacing or removing, move any lasting lesson in its Watch out into its own memory, as in "Before you run it".
-- If the user keeps the other task's handoff, do not write one for this session, and say so. If they replace it, say that its open steps are gone.
 
 ## Handoff template
 
-When the table says to write, update, or replace, do it whether recommending clear or compact. Auto-compact can fire without warning, so this is insurance either way.
+When "Existing handoff" says to write, update, or replace, do it whether recommending clear or compact. Auto-compact can fire without warning, so this is insurance either way.
 
 ```
 # cani-c handoff — <project / task>
@@ -97,6 +94,7 @@ One or two sentences. What and why.
 - traps, failed attempts, things the user disliked
 ```
 
+- Keep it under 5,000 characters. Hook output is capped at 10,000, and a longer handoff arrives cut to a preview.
 - Convert relative dates to absolute dates.
 - Session ID: `${CLAUDE_SESSION_ID}`. If that still reads as a literal `${...}` placeholder, fall back to the basename of the most recently modified `.jsonl` in `~/.claude/projects/<project>/` (`ls -t`). `<project>` is the parent of the auto-memory directory; without one, it is the working directory path with every non-alphanumeric character replaced by `-` (Korean folder names become runs of dashes, so do not guess it, list the directory). Either way it is a UUID. Do not use the `session_…` tail of a Claude-Session URL; that is a different ID and `/resume` does not accept it.
 - Keep the template headings and the verdict keyword in English. Write everything else, body and reason, in the language the user has been using.
@@ -105,9 +103,9 @@ One or two sentences. What and why.
 ## Storage
 
 **memory** (default, personal)
-- Write to the auto-memory directory named in the system prompt as `cani-c-handoff.md` with frontmatter `type: project`.
-- Keep one line for it in `MEMORY.md`: `- [cani-c handoff](cani-c-handoff.md) — unfinished as of <date>: <task>, <N> steps left`. State facts, not commands; memory is read as context, and a plain note of pending work is what makes the next session open it.
-- Only that index line is loaded at session start, not the body. Installed as a plugin, cani-c's own `SessionStart` hook also loads the body into every new or cleared session. Otherwise the next session usually opens it on its own when the first request relates to it; `continue from the cani-c handoff` makes sure.
+- Write to the auto-memory directory named in the system prompt as `cani-c-handoff-<topic>.md` with frontmatter `type: project`. `<topic>` is a short kebab-case name for the task; pick another if that name holds a different task's handoff. An updated handoff keeps its file name, including an older `cani-c-handoff.md`.
+- Keep one line per handoff in `MEMORY.md`: `- [cani-c handoff: <topic>](<file>) — unfinished as of <date>: <task>, <N> steps left`, replacing any older line for the same file. Remove the line with the handoff. State facts, not commands; memory is read as context, and a plain note of pending work is what makes the next session open it.
+- Only the index lines are loaded at session start, not the bodies. Installed as a plugin, cani-c's own `SessionStart` hook also loads the body into every new or cleared session when there is one handoff, or lists the file names when there are several. Otherwise the next session usually opens it on its own when the first request relates to it; `continue from the cani-c handoff` makes sure.
 - Memory is scoped per project folder. A session opened in a subfolder cannot see the parent folder's memory. If the user plans to continue from a different folder, say so.
 - If this environment has no auto-memory directory, fall back to **file** mode and say so.
 
@@ -131,8 +129,9 @@ Short. Fixed order.
 **compact / clear**
 1. `compact recommended` or `clear recommended`, plus one sentence of reason.
 2. `Before you run it:` bullets, only if any apply.
-3. One handoff line: `Handoff written: <path>`, `Handoff updated: <path>`, `Handoff replaced: <path> (was: <old goal>)`, `Handoff removed: <old goal>`, `Handoff kept: <old goal>` (add "this session's work was not saved" if the user chose to keep it), or `No handoff needed: nothing left to continue.`
+3. One line per handoff touched: `Handoff written: <path>`, `Handoff updated: <path>`, `Handoff removed: <old goal>`, and in file mode after the question `Handoff replaced: <path> (was: <old goal>)` or `Handoff kept: <old goal> — this session's work was not saved`. If none was touched and nothing is left to continue, `No handoff needed: nothing left to continue.` In memory, then `Other handoffs left: <file names>` if other tasks' handoffs remain.
 4. Next session, one line, only when a handoff for this session's work now exists.
+   - memory, other handoffs left: `Next session: say "continue from <file name>"`.
    - memory, installed as a plugin, and `<sessionId>.jsonl` sits in the parent of the memory directory (that is where the hook looks; check with `ls`): `Next session: the handoff loads by itself`.
    - memory otherwise: `Next session: just start; to be sure, say "continue from the cani-c handoff"`.
    - file with the hook: `Next session: the handoff loads by itself`. file without it: `read .claude/cani-c.md and continue`.
@@ -145,8 +144,9 @@ Refer to this skill by the name the user invoked it with: `/cani-c`, or `/cani-c
 ## done
 
 - Look at the target location (saved preference, or the `memory`/`file` argument).
+- memory: remove this session's handoff. If none is clearly this session's, list them and ask.
 - Before deleting, move any lasting lesson in its Watch out into its own memory.
-- memory: delete `cani-c-handoff.md` and its line in `MEMORY.md`.
+- memory: delete the handoff file and its line in `MEMORY.md`.
 - file: delete `.claude/cani-c.md`. Leave the hook; it is silent when the file is absent.
 - If the target has no handoff but the other location does, say where it is and leave it.
 - Print one confirmation line. If there was no handoff anywhere, say there was nothing to clean up.

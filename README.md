@@ -30,11 +30,11 @@ Every session. Same prompt. And `/compact` is lossy, so you never know what it d
 3. **Writes or updates a handoff** — goal, fixed decisions, done, next steps in order, files touched, things to watch out for — into Claude Code's auto-memory (default) or a file in your repo.
 4. **Gives you the command.** For compact, a `/compact <focus>` that names what to preserve. For clear, just `/clear`.
 
-In the next session, just start working. Installed as a plugin, cani-c loads a memory-mode handoff into every new or cleared session in that project, so `/clear` right after `/cani-c` picks up where you stopped. Copied by hand, the memory index notes that unfinished work exists, and Claude opens the handoff when your request relates to it. To be sure, say `continue from the cani-c handoff`.
+In the next session, just start working. Installed as a plugin, cani-c loads a memory-mode handoff into every new or cleared session in that project, so `/clear` right after `/cani-c` picks up where you stopped. If the folder holds handoffs from several tasks, it lists their file names instead, and `/cani-c` tells you which one to name. Copied by hand, the memory index notes that unfinished work exists, and Claude opens the handoff when your request relates to it. To be sure, say `continue from the cani-c handoff`.
 
 Run `/cani-c` again later and the handoff rolls forward: finished steps move to Done, decisions and watch-outs carry over, and earlier session IDs stay listed. Once every step is done, `/cani-c` removes the handoff instead of writing a new one, so stale context stops following you around. `/cani-c done` does the same by hand. Either way, lasting lessons in its watch-outs are saved to memory before it goes.
 
-If the existing handoff belongs to a different task that still has open steps, `/cani-c` asks once whether to replace it, or leaves it alone when this session has nothing to hand off.
+Each task gets its own handoff file, so two sessions working on different tasks in the same folder do not overwrite each other. A handoff from another task is left alone until every step in it is done, and `/cani-c` lists the ones still open so they do not pile up unnoticed. In file mode there is only one file, so `/cani-c` asks once whether to replace another task's open handoff.
 
 ## Example
 
@@ -45,7 +45,7 @@ compact recommended — the payments refactor is mid-diff and the next step need
 Before you run it:
 - 2 uncommitted files, not ready to commit (test_refund.py still failing)
 - Saved to memory: the user does not want retry decorators
-Handoff written: ~/.claude/projects/-Users-me-app/memory/cani-c-handoff.md
+Handoff written: ~/.claude/projects/-Users-me-app/memory/cani-c-handoff-payments-refactor.md
 Next session: the handoff loads by itself
 
 /compact preserve the unfinished items of the payments refactor, the decision to keep Stripe webhooks synchronous, and the paths of files being edited
@@ -119,13 +119,13 @@ git clone https://github.com/Yang-woo/cani-c.git
 cp -r cani-c/skills/cani-c ~/.claude/skills/cani-c
 ```
 
-Either way, it is now available in every project. Copied by hand, the command is `/cani-c`. Installed as a plugin, its full name is `/cani-c:cani-c`, and typing `/cani-c` finds it in autocomplete. Only the plugin brings the `SessionStart` hook that loads a memory-mode handoff into the next session. The hook only reads; it changes no settings.
+Either way, it is now available in every project. Copied by hand, the command is `/cani-c`. Installed as a plugin, its full name is `/cani-c:cani-c`, and typing `/cani-c` finds it in autocomplete. Only the plugin brings the `SessionStart` hook that loads memory-mode handoffs into the next session. The hook only reads; it changes no settings.
 
 Auto memory (`~/.claude/projects/<project>/memory/`) is on by default in Claude Code. If you turned it off with `/memory` or `autoMemoryEnabled: false`, cani-c falls back to file mode and says so.
 
 ## Memory vs file
 
-**memory** (default) writes to `~/.claude/projects/<project>/memory/`, whose index Claude Code loads at the start of every session. The plugin's hook loads the full handoff into each new or cleared session. Without the plugin, only the index line is loaded; it says that unfinished work exists, which is usually enough for the next session to open the handoff. Nothing lands in your repo. Scoped per project folder. If two sessions in the same folder run `/cani-c` at the same time, the later one wins.
+**memory** (default) writes to `~/.claude/projects/<project>/memory/`, whose index Claude Code loads at the start of every session. The plugin's hook loads the full handoff into each new or cleared session, or lists the file names when there are several. Without the plugin, only the index lines are loaded; they say that unfinished work exists, which is usually enough for the next session to open the handoff. Nothing lands in your repo. Scoped per project folder, one file per task.
 
 **file** writes `.claude/cani-c.md` in your repo so teammates and other machines can pick it up. Add a `SessionStart` hook to auto-load it; the skill shows you the snippet. The plugin's hook does not read this file: it is committed to the repo, so it loads only where the project opts in.
 

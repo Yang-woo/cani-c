@@ -30,11 +30,11 @@
 3. **handoff를 쓰거나 갱신한다.** 목표, 확정된 결정, 완료한 것, 순서대로 남은 일, 건드린 파일, 주의할 점을 Claude Code의 auto-memory(기본) 또는 리포 안 파일에 기록한다.
 4. **칠 명령을 준다.** compact면 보존할 내용을 지정한 `/compact <focus>`, clear면 그냥 `/clear`.
 
-다음 세션에서는 그냥 작업을 시작하면 된다. 플러그인으로 설치했다면 그 프로젝트의 새 세션과 `/clear`한 세션마다 cani-c가 memory 모드 handoff를 넣어 준다. 그래서 `/cani-c` 직후 `/clear`해도 멈춘 곳에서 이어간다. 직접 복사했다면 메모리 인덱스에 이어갈 작업이 있다고 적혀 있어서, 요청이 그 작업과 관련되면 Claude가 handoff를 열어 본다. 확실히 하려면 `continue from the cani-c handoff`라고 말하면 된다.
+다음 세션에서는 그냥 작업을 시작하면 된다. 플러그인으로 설치했다면 그 프로젝트의 새 세션과 `/clear`한 세션마다 cani-c가 memory 모드 handoff를 넣어 준다. 그래서 `/cani-c` 직후 `/clear`해도 멈춘 곳에서 이어간다. 폴더에 여러 작업의 handoff가 있으면 대신 파일 이름 목록을 넣고, 어느 파일을 말하면 되는지는 `/cani-c`가 알려준다. 직접 복사했다면 메모리 인덱스에 이어갈 작업이 있다고 적혀 있어서, 요청이 그 작업과 관련되면 Claude가 handoff를 열어 본다. 확실히 하려면 `continue from the cani-c handoff`라고 말하면 된다.
 
 나중에 `/cani-c`를 다시 치면 handoff가 이어서 갱신된다. 끝낸 단계는 Done으로 옮기고, 확정된 결정과 주의사항은 넘기고, 이전 세션 ID도 남긴다. 모든 단계가 끝났으면 새 handoff를 쓰는 대신 기존 것을 지워서, 오래된 컨텍스트가 계속 따라다니지 않게 한다. `/cani-c done`은 같은 일을 수동으로 한다. 어느 쪽이든 지우기 전에 주의사항 중 오래 갈 교훈은 메모리로 옮긴다.
 
-기존 handoff가 다른 작업이고 남은 단계가 있으면, `/cani-c`는 교체할지 한 번 묻는다. 이 세션에 넘길 일이 없으면 그대로 둔다.
+handoff는 작업마다 파일이 따로라서, 같은 폴더에서 두 세션이 서로 다른 작업을 해도 서로 덮어쓰지 않는다. 다른 작업의 handoff는 모든 단계가 끝나기 전까지 그대로 두고, 남아 있는 것들은 `/cani-c`가 목록으로 보여줘서 모르는 새 쌓이지 않게 한다. file 모드는 파일이 하나뿐이라, 다른 작업의 남은 handoff가 있으면 교체할지 한 번 묻는다.
 
 ## 예시
 
@@ -45,7 +45,7 @@ compact recommended — 결제 리팩터링이 diff 중간이고, 다음 단계�
 Before you run it:
 - 커밋 안 된 파일 2개, 아직 커밋할 상태 아님 (test_refund.py 실패 중)
 - 메모리에 저장함: 사용자는 retry 데코레이터를 원하지 않음
-Handoff written: ~/.claude/projects/-Users-me-app/memory/cani-c-handoff.md
+Handoff written: ~/.claude/projects/-Users-me-app/memory/cani-c-handoff-payments-refactor.md
 Next session: the handoff loads by itself
 
 /compact preserve the unfinished items of the payments refactor, the decision to keep Stripe webhooks synchronous, and the paths of files being edited
@@ -125,7 +125,7 @@ auto memory(`~/.claude/projects/<project>/memory/`)는 Claude Code에서 기본�
 
 ## memory vs file
 
-**memory** (기본)는 `~/.claude/projects/<project>/memory/`에 쓴다. Claude Code가 세션 시작마다 인덱스를 자동으로 읽는 곳이다. 플러그인의 훅은 새 세션과 `/clear`한 세션마다 handoff 전체를 넣어 준다. 플러그인이 없으면 인덱스 한 줄만 올라오는데, 그 줄에 이어갈 작업이 있다고 적혀 있어서 대개 다음 세션이 handoff를 스스로 연다. 리포에는 아무것도 남지 않는다. 프로젝트 폴더 단위로 분리된다. 같은 폴더에서 두 세션이 동시에 `/cani-c`를 치면 나중에 쓴 쪽이 이긴다.
+**memory** (기본)는 `~/.claude/projects/<project>/memory/`에 쓴다. Claude Code가 세션 시작마다 인덱스를 자동으로 읽는 곳이다. 플러그인의 훅은 새 세션과 `/clear`한 세션마다 handoff 전체를 넣어 주고, 여러 개면 파일 이름 목록을 넣는다. 플러그인이 없으면 인덱스 줄만 올라오는데, 그 줄에 이어갈 작업이 있다고 적혀 있어서 대개 다음 세션이 handoff를 스스로 연다. 리포에는 아무것도 남지 않는다. 프로젝트 폴더 단위로 분리되고, 작업마다 파일이 따로다.
 
 **file**은 리포 안 `.claude/cani-c.md`에 쓴다. 팀원이나 다른 기기에서 이어받을 수 있다. 자동 로드하려면 `SessionStart` 훅이 필요한데, 스킬이 스니펫을 보여준다. 플러그인의 훅은 이 파일을 읽지 않는다. 리포에 커밋되는 파일이라 프로젝트가 직접 켠 곳에서만 로드되게 했다.
 

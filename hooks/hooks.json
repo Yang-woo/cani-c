@@ -1,5 +1,5 @@
 {
-  "description": "Load the memory-mode cani-c handoff into new and cleared sessions",
+  "description": "Load the memory-mode cani-c handoff into new and cleared sessions, or list the file names when there are several",
   "hooks": {
     "SessionStart": [
       {
